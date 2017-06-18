@@ -1,0 +1,13 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build iaas-nae-core-api:
+  stage: build
+  script:
+  - "./deps.sh"
+  - "./build.sh" 
+  only:
+  - tags
+

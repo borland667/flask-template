@@ -1,0 +1,18 @@
+#!/bin/bash
+git tag -l | sort -r -V -u | while read TAG ; do
+    echo
+    if [ $NEXT ];then
+	AUTHOR=`git show --quiet $TAG..$NEXT | grep Author | awk -F':' '{print $2}' | sed 's/^\s*//g'| head -1`
+	DATE=`git show --quiet $TAG..$NEXT | grep Date | sed 's/^Date:\s*//g' |head -1 | awk '{print $1, $2, $3, $5}'`
+	[[ -n ${DATE} ]] && echo "* ${DATE} ${AUTHOR} ${NEXT}"
+    fi
+    # | grep Author | awk -F':' '{print $2}' | sed 's/^\s*//g'
+    GIT_PAGER=cat git log --no-merges --format=" - %s" $TAG..$NEXT
+    NEXT=$TAG
+done
+FIRST=$(git tag -l | head -1)
+AUTHOR=`git show --quiet $FIRST | grep Author | awk -F':' '{print $2}' | sed 's/^\s*//g'| head -1`
+DATE=`git show --quiet $FIRST | grep Date | sed 's/^Date:\s*//g'| head -1 | awk '{print $1, $2, $3, $5}'`
+echo
+echo "* ${DATE} ${AUTHOR} ${FIRST}"
+GIT_PAGER=cat git log --no-merges --format=" * %s" $FIRST
