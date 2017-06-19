@@ -1,6 +1,13 @@
-from urllib import quote_plus
+import logging
+
+try:
+    from urllib import quote_plus
+except ImportError:
+    from urllib.parse import quote_plus
 from celery.schedules import crontab
 
+import pymysql
+pymysql.install_as_MySQLdb()
 
 class HardCoded(object):
     """Constants used throughout the application.
@@ -31,7 +38,6 @@ class CeleryConfig(HardCoded):
     CELERY_TASK_RESULT_EXPIRES = 10 * 60  # Dispose of Celery Beat results after 10 minutes.
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_TRACK_STARTED = True
-
     CELERYBEAT_SCHEDULE = {
         'pypy-every-day': dict(task='pypi.update_package_list', schedule=crontab(hour='0')),
     }
@@ -41,15 +47,97 @@ class Config(CeleryConfig):
     """Default Flask configuration inherited by all environments. Use this for development environments."""
     DEBUG = True
     TESTING = False
-    SECRET_KEY = "i_don't_want_my_cookies_expiring_while_developing"
-    MAIL_SERVER = 'smtp.localhost.test'
+    SECRET_KEY = 'jBerCHfD7dYjR2u7Lf2NkYvJ'
+    MAIL_SERVER = 'localhost'
     MAIL_DEFAULT_SENDER = 'admin@demo.test'
     MAIL_SUPPRESS_SEND = True
     REDIS_URL = 'redis://localhost/0'
+    CELERY_BROKER_URL = 'redis://localhost/0'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = property(lambda self: 'mysql://{u}:{p}@{h}/{d}'.format(
         d=quote_plus(self._SQLALCHEMY_DATABASE_DATABASE), h=quote_plus(self._SQLALCHEMY_DATABASE_HOSTNAME),
         p=quote_plus(self._SQLALCHEMY_DATABASE_PASSWORD), u=quote_plus(self._SQLALCHEMY_DATABASE_USERNAME)
     ))
+
+    LOG_LEVELS = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+        'critical': logging.CRITICAL,
+    }
+
+    if DEBUG:
+        CONSOLE_LOG_LEVEL = LOG_LEVELS['debug']
+        FILE_LOG_LEVEL = LOG_LEVELS['debug']
+    else:
+        # Console logger is set to WARNING by default
+        CONSOLE_LOG_LEVEL = LOG_LEVELS['warning']
+        # File logger is set to INFO by default
+        FILE_LOG_LEVEL = LOG_LEVELS['info']
+
+    LOG_DIR = './'
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(asctime)s":[%(levelname)s]:[%(process)d-%(thread)d]:[%(name)s]:[%(funcName)s]: %(message)s'
+            },
+            'simple': {
+                'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            },
+        },
+        'handlers': {
+            'file': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'level': FILE_LOG_LEVEL,
+                'filename': LOG_DIR + 'restify.log',
+                'maxBytes': 10485760,
+                'backupCount': 10,
+                'encoding': 'utf8',
+                'formatter': 'verbose',
+            },
+            'file_debug': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'level': 'DEBUG',
+                'filename': LOG_DIR + 'restify-debug.log',
+                'maxBytes': 10485760,
+                'backupCount': 10,
+                'encoding': 'utf8',
+                'formatter': 'verbose',
+            },
+            'console': {
+                'level': CONSOLE_LOG_LEVEL,
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+                'stream': 'ext://sys.stdout'
+            }
+        },
+        'loggers': {
+            '__main__':
+                {
+                    'propagate': "yes",
+                    'level': 'DEBUG'
+                },
+            'werkzeug':
+                {
+                    'propagate': 'yes',
+                    'level': 'DEBUG'
+                },
+            'restify':
+                {
+                    'propagate': "yes",
+                    'level': 'DEBUG'
+                },
+        },
+
+        'root': {
+            'propagate': 'yes',
+            'handlers': ['file', 'console', 'file_debug']
+        }
+    }
 
 
 class Testing(Config):

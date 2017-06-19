@@ -2,9 +2,12 @@
 
 from distutils.version import LooseVersion
 from logging import getLogger
-import xmlrpclib
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
-from flask.ext.celery import single_instance
+from flask_celery import single_instance
 
 from restify.extensions import celery, db, redis
 from restify.models.pypi import Package

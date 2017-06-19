@@ -1,11 +1,12 @@
 """Holds the create_app() Flask application factory. More information in create_app() docstring."""
-
+import logging
+import logging.config
 from importlib import import_module
 import locale
 import os
 
 from flask import Flask
-from flask.ext.statics import Statics
+from flask_statics import Statics
 from yaml import load
 
 import restify as app_root
@@ -16,6 +17,8 @@ APP_ROOT_FOLDER = os.path.abspath(os.path.dirname(app_root.__file__))
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
 REDIS_SCRIPTS_FOLDER = os.path.join(APP_ROOT_FOLDER, 'redis_scripts')
+
+module_logger = logging.getLogger(__name__)
 
 
 def get_config(config_class_string, yaml_files=None):
@@ -110,3 +113,10 @@ def create_app(config_obj, no_sql=False):
 
     # Return the application instance.
     return app
+
+# MAIN (only used for DEV with pychamrs)
+if __name__ == '__main__':
+    new_app = create_app(get_config('restify.config.Production'))
+    logging.config.dictConfig(new_app.config['LOGGING'])
+    module_logger.info('Starting flask application...')
+    new_app.run(port=5001)
