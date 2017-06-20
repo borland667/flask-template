@@ -9,7 +9,7 @@ except ImportError:
 
 from flask_celery import single_instance
 
-from restify.extensions import celery, db, redis
+from restify.extensions import celery, database, redis
 from restify.models.pypi import Package
 from restify.models.redis import POLL_SIMPLE_THROTTLE
 
@@ -51,7 +51,7 @@ def update_package_list():
     packages = {r['name']: dict(summary=r['summary'], version=r['version'], id=0) for r in filtered}
 
     LOG.debug('Pruning unchanged packages.')
-    for row in db.session.query(Package.id, Package.name, Package.summary, Package.latest_version):
+    for row in database.session.query(Package.id, Package.name, Package.summary, Package.latest_version):
         if packages.get(row[1]) == dict(summary=row[2], version=row[3], id=0):
             packages.pop(row[1])
         elif row[1] in packages:
@@ -60,8 +60,8 @@ def update_package_list():
 
     # Merge into database.
     LOG.debug('Found {} new packages in PyPI, updating {} total.'.format(len(new_package_names), len(packages)))
-    with db.session.begin_nested():
+    with database.session.begin_nested():
         for name, data in packages.items():
-            db.session.merge(Package(id=data['id'], name=name, summary=data['summary'], latest_version=data['version']))
-    db.session.commit()
+            database.session.merge(Package(id=data['id'], name=name, summary=data['summary'], latest_version=data['version']))
+    database.session.commit()
     return list(new_package_names)

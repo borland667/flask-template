@@ -1,6 +1,6 @@
 import pytest
 
-from restify.extensions import db
+from restify.extensions import database
 from restify.models.pypi import Package
 
 
@@ -8,8 +8,8 @@ from restify.models.pypi import Package
 def drop_table():
     """Drops the pypi.Package table from the database."""
     Package.query.delete()  # Drop all rows.
-    db.session.commit()
-    Package.__table__.drop(db.engine)  # Drop the table.
-    db.session.commit()
-    db.create_all()
+    database.session.commit()
+    Package.__table__.drop(database.engine)  # Drop the table.
+    database.session.commit()
+    database.create_all()
     assert [] == Package.query.all()

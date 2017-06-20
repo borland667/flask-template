@@ -12,7 +12,7 @@ from flask import current_app, render_template, request
 from markupsafe import Markup
 
 from restify.core.email import send_exception
-from restify.extensions import db
+from restify.extensions import database
 
 LOG = getLogger(__name__)
 
@@ -32,7 +32,7 @@ def celery_worker_init_db(**_):
     Based on http://stackoverflow.com/a/14146403/1198943
     """
     LOG.debug('Initializing SQLAlchemy for PID {}.'.format(os.getpid()))
-    db.init_app(current_app)
+    database.init_app(current_app)
 
 
 # Send email when a Celery task raises an unhandled exception.

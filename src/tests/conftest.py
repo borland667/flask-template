@@ -3,7 +3,7 @@ import xmlrpclib
 import pytest
 
 from restify.application import create_app, get_config
-from restify.extensions import db
+from restify.extensions import database
 
 
 class FakeServerProxy(object):
@@ -19,7 +19,7 @@ class FakeServerProxy(object):
 @pytest.fixture(autouse=True, scope='session')
 def create_all():
     """Create all database tables."""
-    db.create_all()
+    database.create_all()
 
 
 @pytest.fixture(scope='session')

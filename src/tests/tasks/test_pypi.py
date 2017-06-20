@@ -1,6 +1,6 @@
 import pytest
 
-from restify.extensions import redis, db
+from restify.extensions import redis, database
 from restify.models.pypi import Package
 from restify.models.redis import POLL_SIMPLE_THROTTLE
 from restify.tasks.pypi import update_package_list
@@ -40,7 +40,7 @@ def test_sorting(alter_xmlrpc, latest):
         ('packageA', 'Test package.', '2.0.0-beta' if latest else '1.10.0'),
         ('packageB', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
 
@@ -57,7 +57,7 @@ def test_updating(alter_xmlrpc):
         ('packageA', 'Test package.', '2.0.0-beta'),
         ('packageB', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
     value = [
@@ -73,7 +73,7 @@ def test_updating(alter_xmlrpc):
         ('packageB', 'Test package.', '3.0.0'),
         ('packageC', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
     value = [
@@ -88,5 +88,5 @@ def test_updating(alter_xmlrpc):
         ('packageB', 'Test package.', '3.0.0'),
         ('packageC', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual

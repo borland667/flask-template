@@ -21,8 +21,8 @@ class HardCoded(object):
     MAIL_EXCEPTION_THROTTLE = 24 * 60 * 60
     _SQLALCHEMY_DATABASE_DATABASE = 'restify'
     _SQLALCHEMY_DATABASE_HOSTNAME = 'localhost'
-    _SQLALCHEMY_DATABASE_PASSWORD = 'pypi_p@ssword'
-    _SQLALCHEMY_DATABASE_USERNAME = 'pypi_service'
+    _SQLALCHEMY_DATABASE_PASSWORD = ''
+    _SQLALCHEMY_DATABASE_USERNAME = 'root'
 
 
 class CeleryConfig(HardCoded):
@@ -48,11 +48,13 @@ class Config(CeleryConfig):
     DEBUG = True
     TESTING = False
     SECRET_KEY = 'jBerCHfD7dYjR2u7Lf2NkYvJ'
+    SESSION_TYPE = 'filesystem'
     MAIL_SERVER = 'localhost'
-    MAIL_DEFAULT_SENDER = 'admin@demo.test'
+    MAIL_DEFAULT_SENDER = 'osvaldo.demo@spark.co.nz'
     MAIL_SUPPRESS_SEND = True
     REDIS_URL = 'redis://localhost/0'
     CELERY_BROKER_URL = 'redis://localhost/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost/0'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = property(lambda self: 'mysql://{u}:{p}@{h}/{d}'.format(
         d=quote_plus(self._SQLALCHEMY_DATABASE_DATABASE), h=quote_plus(self._SQLALCHEMY_DATABASE_HOSTNAME),
@@ -149,7 +151,7 @@ class Testing(Config):
 
 class Production(Config):
     DEBUG = False
-    SECRET_KEY = None  # To be overwritten by a YAML file.
-    ADMINS = ['my-team@me.test']
+    # SECRET_KEY = None  # To be overwritten by a YAML file.
+    ADMINS = ['osvaldo.demo@spark.co.nz']
     MAIL_SUPPRESS_SEND = False
     STATICS_MINIFY = True

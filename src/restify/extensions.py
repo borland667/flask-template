@@ -29,6 +29,6 @@ def _on_connect(dbapi_connection, **_):
 
 
 celery = Celery()
-db = SQLAlchemy()
+database = SQLAlchemy()
 mail = Mail()
 redis = Redis()

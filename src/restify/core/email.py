@@ -32,9 +32,9 @@ def _override_html():
     # Get new HTML.
     email_template = current_app.jinja_env.get_template('email.html')
     email_context = email_template.new_context()
-    page_html = email_template.blocks['page_html'](email_context).next()
-    summary_html = email_template.blocks['summary_html'](email_context).next()
-    frame_html = email_template.blocks['frame_html'](email_context).next()
+    page_html = next(email_template.blocks['page_html'](email_context))
+    summary_html = next(email_template.blocks['summary_html'](email_context))
+    frame_html = next(email_template.blocks['frame_html'](email_context))
     # Change module variables.
     tbtools.PAGE_HTML = page_html
     tbtools.SUMMARY_HTML = summary_html

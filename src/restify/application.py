@@ -11,7 +11,7 @@ from yaml import load
 
 import restify as app_root
 from restify.blueprints import all_blueprints
-from restify.extensions import celery, db, mail, redis
+from restify.extensions import celery, database, mail, redis
 
 APP_ROOT_FOLDER = os.path.abspath(os.path.dirname(app_root.__file__))
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
@@ -100,7 +100,7 @@ def create_app(config_obj, no_sql=False):
 
     # Initialize extensions/add-ons/plugins.
     if not no_sql:
-        db.init_app(app)
+        database.init_app(app)
     Statics(app)  # Enable Flask-Statics-Helper features.
     redis.init_app(app)
     celery.init_app(app)

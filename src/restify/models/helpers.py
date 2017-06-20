@@ -3,10 +3,10 @@
 from sqlalchemy import Column, func, Integer
 from sqlalchemy.ext.declarative import declared_attr
 
-from restify.extensions import db
+from restify.extensions import database
 
 
-class Base(db.Model):
+class Base(database.Model):
     """Convenience base DB model class. Makes sure tables in MySQL are created as InnoDB.
 
     This is to enforce foreign key constraints (MyISAM doesn't support constraints) outside of production. Tables are
@@ -35,7 +35,7 @@ def count(column, value, glob=False):
     Returns:
     Number of rows that match. Equivalent of SELECT count(*) FROM.
     """
-    query = db.session.query(func.count('*'))
+    query = database.session.query(func.count('*'))
     if glob:
         query = query.filter(column.ilike(value))
     else:

@@ -3,7 +3,7 @@ from flask_celery import CELERY_LOCK
 import pytest
 from redis.exceptions import LockError
 
-from restify.extensions import db, redis
+from restify.extensions import database, redis
 from restify.models.pypi import Package
 from restify.models.redis import POLL_SIMPLE_THROTTLE
 from restify.tasks import pypi
@@ -23,10 +23,10 @@ def test_sync_empty(alter_xmlrpc):
     alter_xmlrpc(set())
     redis.delete(POLL_SIMPLE_THROTTLE)
     Package.query.delete()
-    db.session.commit()
+    database.session.commit()
 
     assert '302 FOUND' == current_app.test_client().get('/pypi/sync').status
-    assert [] == db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    assert [] == database.session.query(Package.name, Package.summary, Package.latest_version).all()
 
 
 def test_sync_few(alter_xmlrpc):
@@ -36,7 +36,7 @@ def test_sync_few(alter_xmlrpc):
     assert '302 FOUND' == current_app.test_client().get('/pypi/sync').status
 
     expected = [('packageB', 'Test package.', '3.0.0'), ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
 
@@ -46,7 +46,7 @@ def test_sync_rate_limit(alter_xmlrpc):
     assert '302 FOUND' == current_app.test_client().get('/pypi/sync').status
 
     expected = [('packageB', 'Test package.', '3.0.0'), ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
 
@@ -61,7 +61,7 @@ def test_sync_parallel(alter_xmlrpc):
     assert '302 FOUND' == current_app.test_client().get('/pypi/sync').status
 
     expected = [('packageB', 'Test package.', '3.0.0'), ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert expected == actual
 
     try:
@@ -87,7 +87,7 @@ def test_sync_many(alter_xmlrpc):
         ('packageB2', 'Test package.', '3.0.0'), ('packageB3', 'Test package.', '3.0.0'),
         ('packageB4', 'Test package.', '3.0.0'), ('packageB5', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert sorted(expected) == sorted(actual)
 
 
@@ -114,7 +114,7 @@ def test_sync_timeout():
         ('packageB2', 'Test package.', '3.0.0'), ('packageB3', 'Test package.', '3.0.0'),
         ('packageB4', 'Test package.', '3.0.0'), ('packageB5', 'Test package.', '3.0.0'),
     ]
-    actual = db.session.query(Package.name, Package.summary, Package.latest_version).all()
+    actual = database.session.query(Package.name, Package.summary, Package.latest_version).all()
     assert sorted(expected) == sorted(actual)
 
     pypi.update_package_list.delay = old_delay
