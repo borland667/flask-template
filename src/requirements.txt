@@ -25,7 +25,7 @@ pytest==3.1.2
 pytz==2017.2
 PyYAML==3.12
 redis==2.10.5
-requests==2.18.1
+requests==2.20.0
 six==1.10.0
 SQLAlchemy==1.1.10
 tornado==4.5.1
