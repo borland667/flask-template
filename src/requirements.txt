@@ -16,7 +16,7 @@ Flask-SQLAlchemy==2.2
 Flask-Statics-Helper==1.0.0
 idna==2.5
 itsdangerous==0.24
-Jinja2==2.9.6
+Jinja2==2.11.3
 kombu==4.0.2
 MarkupSafe==1.0
 py==1.4.34
